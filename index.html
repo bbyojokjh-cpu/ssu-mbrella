@@ -14,6 +14,7 @@
             --accent-red: #e74c3c;
             --accent-green: #2ecc71;
             --accent-yellow: #f1c40f;
+            --accent-orange: #f39c12;
             --gold: #FFD700;
             --silver: #C0C0C0;
             --bronze: #CD7F32;
@@ -21,7 +22,6 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; }
         .app-container { width: 100%; max-width: 480px; background-color: var(--bg-color); min-height: 100vh; position: relative; }
-        
         .header { background-color: var(--primary-color); color: white; padding: 20px; text-align: center; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .header h1 { font-size: 24px; margin-bottom: 5px; }
         .header p { font-size: 14px; opacity: 0.9; }
@@ -35,11 +35,11 @@
         .btn-primary:active { background-color: #004a93; }
 
         #dashboard-screen { display: none; padding: 20px; padding-bottom: 100px; }
-        
-        /* 사용자 정보 & 랭킹 보드 */
-        .user-info { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+        .user-info { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 15px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .user-info .points { color: var(--primary-color); font-weight: bold; font-size: 18px; }
-        
+        .rental-detail { background: #eaf4ff; border: 1px solid #cfe4fb; color: #234; border-radius: 10px; padding: 10px 12px; margin-bottom: 15px; font-size: 12px; line-height: 1.6; display: none; }
+
         .leaderboard-card { background: var(--card-bg); border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #eee; }
         .leaderboard-card h3 { font-size: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
         .leaderboard-desc { font-size: 12px; color: var(--text-sub); margin-bottom: 12px; }
@@ -53,36 +53,47 @@
         .rank-id { flex: 1; letter-spacing: 1px; color: #555; }
         .rank-pts { font-weight: bold; color: var(--primary-color); }
 
-        /* 거치대 카드 */
         .station-card { background: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); position: relative; }
-        .station-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .station-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
         .station-header h3 { font-size: 16px; }
+        .station-location { font-size: 11px; color: var(--text-sub); margin-bottom: 12px; }
         .status-badge { padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-        .status-ok { background-color: #e8f8f5; color: var(--accent-green); }
+        .status-ok { background-color: #e8f8f5; color: #168a50; }
+        .status-low { background-color: #fff5d6; color: #9a6b00; }
         .status-empty { background-color: #fdedec; color: var(--accent-red); }
-        
-        .slot-container { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 15px; }
-        .slot { width: calc(20% - 5px); height: 35px; border-radius: 6px; display: flex; justify-content: center; align-items: center; font-size: 10px; font-weight: bold; transition: 0.3s; }
+
+        .slot-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; margin-bottom: 10px; }
+        .slot { height: 48px; border-radius: 7px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 9px; font-weight: bold; transition: 0.2s; user-select: none; }
+        .slot strong { font-size: 10px; margin-bottom: 2px; }
         .slot.has-umb { background-color: var(--primary-color); color: white; }
         .slot.empty { background-color: #eeeeee; color: var(--text-sub); border: 2px dashed #cccccc; }
-        .slot.broken { background-color: #555555; color: white; border: 2px solid #e74c3c; }
-        
-        /* 1초 반납 UI를 반영한 버튼 스타일 */
+        .slot.return-ready { background-color: #eafaf1; color: #137a44; border: 2px solid var(--accent-green); cursor: pointer; animation: pulse 1s infinite alternate; }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.03); } }
+
+        .slot-summary { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-sub); margin: 8px 0 14px; }
         .action-btns { display: flex; gap: 8px; flex-direction: column; }
         .action-row { display: flex; gap: 8px; }
-        .btn-rent { flex: 1; background-color: var(--primary-color); color: white; padding: 12px; font-size: 14px; }
-        .btn-return { flex: 2; background-color: #34495e; color: white; position: relative; padding: 12px; font-size: 14px; }
-        .btn-return-broken { flex: 1; background-color: var(--accent-red); color: white; padding: 12px; font-size: 12px; }
+        .btn-rent { background-color: var(--primary-color); color: white; padding: 12px; font-size: 14px; }
+        .btn-return { flex: 1.4; background-color: #34495e; color: white; position: relative; padding: 12px; font-size: 13px; }
+        .btn-broken-web { flex: 1; background-color: var(--accent-red); color: white; padding: 12px; font-size: 12px; }
         .btn-disabled { background-color: #cccccc !important; cursor: not-allowed; }
 
-        .incentive-badge { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--accent-yellow); color: #333; font-size: 11px; padding: 4px 10px; border-radius: 12px; font-weight: bold; animation: pop 1s infinite alternate; box-shadow: 0 2px 4px rgba(0,0,0,0.2); width: max-content;}
-        @keyframes pop { from { transform: translateX(-50%) scale(1); } to { transform: translateX(-50%) scale(1.05); } }
+        .incentive-badge { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--accent-yellow); color: #333; font-size: 10px; padding: 4px 8px; border-radius: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); width: max-content; }
+        .return-guide { display: none; background: #edf9f2; color: #185c38; border: 1px solid #bfe8d0; border-radius: 8px; padding: 10px; margin: 10px 0 12px; font-size: 11px; line-height: 1.5; }
+        .prototype-note { margin-top: 8px; color: var(--text-sub); font-size: 10px; line-height: 1.4; }
 
-        #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 12px 24px; border-radius: 30px; font-size: 14px; display: none; z-index: 1000; white-space: nowrap; }
+        .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
+        .modal { width: 100%; max-width: 430px; background: white; border-radius: 16px; padding: 20px; box-shadow: 0 10px 35px rgba(0,0,0,0.2); }
+        .modal h3 { margin-bottom: 8px; }
+        .modal p { font-size: 12px; color: var(--text-sub); line-height: 1.5; margin-bottom: 15px; }
+        .modal select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; margin-bottom: 12px; }
+        .modal-actions { display: flex; gap: 8px; }
+        .btn-secondary { background: #e9ecef; color: #333; }
+
+        #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); color: white; padding: 12px 20px; border-radius: 30px; font-size: 13px; display: none; z-index: 3000; max-width: calc(100% - 30px); text-align: center; }
     </style>
 </head>
 <body>
-
 <div class="app-container">
     <div class="header">
         <h1>SSU-MBRELLA</h1>
@@ -115,50 +126,81 @@
             </div>
             <div class="points">P <span id="userPoints">0</span></div>
         </div>
+        <div class="rental-detail" id="rentalDetail"></div>
 
-        <!-- 랭킹 보드 영역 추가 -->
         <div class="leaderboard-card">
             <h3>🏆 숨브렐라 리밸런싱 Top 3 <span>🎁</span></h3>
-            <p class="leaderboard-desc">자원 순환을 위해 가장 투지에 불타올랐습니다!🔥<br>매월 Top 3에게 커피 쿠폰이 지급됩니다.</p>
-            <ul class="rank-list" id="rankingList">
-                <!-- JS에서 동적 렌더링 -->
-            </ul>
+            <p class="leaderboard-desc">재고가 부족한 스테이션에 반납하면 +500P!<br>매월 Top 3에게 커피 쿠폰이 지급됩니다.</p>
+            <ul class="rank-list" id="rankingList"></ul>
         </div>
 
         <div class="station-card" id="stationA">
             <div class="station-header">
-                <h3>Station A (공학관 정문)</h3>
+                <h3>Station A</h3>
                 <span class="status-badge status-ok" id="badgeA">여유</span>
             </div>
+            <div class="station-location">형남공학관 1층 · 정문 출입구</div>
             <div class="slot-container" id="slotsA"></div>
+            <div class="slot-summary"><span id="stockTextA"></span><span id="emptyTextA"></span></div>
+            <div class="return-guide" id="returnGuideA">
+                ✅ <b>빈 홈 아무 곳에나 우산을 꽂아주세요.</b><br>
+                실제 기기에서는 Arduino UNO R4 WiFi가 꽂힌 홈의 센서를 자동 감지합니다.
+            </div>
             <div class="action-btns">
                 <button class="btn btn-rent" id="rentBtnA" onclick="rentUmbrella('A')">우산 대여하기 (QR 인식)</button>
                 <div class="action-row">
-                    <button class="btn btn-return btn-disabled" id="returnBtnA" onclick="returnUmbrella('A', false)">
-                        우산 꽂기 (자동 1초 반납)
-                        <div class="incentive-badge" id="incentiveA" style="display: none;">빈 슬롯 채움 +500P 적립!</div>
+                    <button class="btn btn-return btn-disabled" id="returnBtnA" onclick="startNormalReturn('A')">
+                        이곳에 정상 반납
+                        <div class="incentive-badge" id="incentiveA" style="display:none;">이곳에 반납 +500P</div>
                     </button>
-                    <button class="btn btn-return-broken btn-disabled" id="brokenBtnA" onclick="returnUmbrella('A', true)">고장 버튼<br>누르고 꽂기</button>
+                    <button class="btn btn-broken-web btn-disabled" id="brokenBtnA" onclick="openBrokenReturn('A')">파손 우산<br>웹 신고</button>
                 </div>
             </div>
+            <div class="prototype-note">※ 시제품 웹에서는 빈 홈을 눌러 센서 감지를 시뮬레이션합니다.</div>
         </div>
 
         <div class="station-card" id="stationB">
             <div class="station-header">
-                <h3>Station B (학관 연결로)</h3>
+                <h3>Station B</h3>
                 <span class="status-badge status-ok" id="badgeB">여유</span>
             </div>
+            <div class="station-location">형남공학관 2층 · 중문/학생회관 연결로</div>
             <div class="slot-container" id="slotsB"></div>
+            <div class="slot-summary"><span id="stockTextB"></span><span id="emptyTextB"></span></div>
+            <div class="return-guide" id="returnGuideB">
+                ✅ <b>빈 홈 아무 곳에나 우산을 꽂아주세요.</b><br>
+                실제 기기에서는 Arduino UNO R4 WiFi가 꽂힌 홈의 센서를 자동 감지합니다.
+            </div>
             <div class="action-btns">
                 <button class="btn btn-rent" id="rentBtnB" onclick="rentUmbrella('B')">우산 대여하기 (QR 인식)</button>
                 <div class="action-row">
-                    <button class="btn btn-return btn-disabled" id="returnBtnB" onclick="returnUmbrella('B', false)">
-                        우산 꽂기 (자동 1초 반납)
-                        <div class="incentive-badge" id="incentiveB" style="display: none;">빈 슬롯 채움 +500P 적립!</div>
+                    <button class="btn btn-return btn-disabled" id="returnBtnB" onclick="startNormalReturn('B')">
+                        이곳에 정상 반납
+                        <div class="incentive-badge" id="incentiveB" style="display:none;">이곳에 반납 +500P</div>
                     </button>
-                    <button class="btn btn-return-broken btn-disabled" id="brokenBtnB" onclick="returnUmbrella('B', true)">고장 버튼<br>누르고 꽂기</button>
+                    <button class="btn btn-broken-web btn-disabled" id="brokenBtnB" onclick="openBrokenReturn('B')">파손 우산<br>웹 신고</button>
                 </div>
             </div>
+            <div class="prototype-note">※ 다른 스테이션에서 빌린 우산도 빈 홈이면 자유롭게 반납할 수 있습니다.</div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="brokenModal">
+    <div class="modal">
+        <h3>⚠️ 파손 우산 반납</h3>
+        <p id="brokenStationText"></p>
+        <select id="brokenReason">
+            <option value="우산살 파손">우산살 파손</option>
+            <option value="천 찢어짐">천 찢어짐</option>
+            <option value="손잡이 파손">손잡이 파손</option>
+            <option value="개폐 불량">개폐 불량</option>
+            <option value="기타">기타</option>
+        </select>
+        <p><b>정상 슬롯에 꽂지 마세요.</b><br>기기 측면에 부착된 파손 우산 전용 보관함에 넣어주세요.</p>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeBrokenModal()">취소</button>
+            <button class="btn btn-primary" onclick="confirmBrokenReturn()">파손 반납 완료</button>
         </div>
     </div>
 </div>
@@ -170,15 +212,27 @@
         isLoggedIn: false,
         studentId: "",
         hasUmbrella: false,
-        points: 0
+        points: 0,
+        borrowedStation: null,
+        borrowedSlot: null,
+        borrowedAt: null
     };
 
+    // true = 우산 있음, false = 빈 홈. 각 스테이션 10홈.
     let db = {
-        A: { capacity: 20, stock: 15, brokenSlots: 0 },
-        B: { capacity: 20, stock: 15, brokenSlots: 0 }
+        A: { slots: [true, true, false, true, true, false, true, true, true, false] },
+        B: { slots: [true, true, true, true, false, true, true, true, true, true] }
     };
 
-    // 기존 학생들의 가상 랭킹 데이터
+    const stationNames = {
+        A: "Station A (형남공학관 1층)",
+        B: "Station B (형남공학관 2층)"
+    };
+
+    let pendingReturnStation = null;
+    let brokenReturnStation = null;
+    const REBALANCE_THRESHOLD = 3;
+
     let mockUsers = [
         { id: "20230192", points: 2500 },
         { id: "20241834", points: 1500 },
@@ -186,14 +240,25 @@
         { id: "20224538", points: 500 }
     ];
 
+    function getStock(station) {
+        return db[station].slots.filter(Boolean).length;
+    }
+
+    function getEmpty(station) {
+        return db[station].slots.length - getStock(station);
+    }
+
+    function slotLabel(station, index) {
+        return station + "-" + String(index + 1).padStart(2, "0");
+    }
+
     function showToast(msg) {
         const toast = document.getElementById('toast');
         toast.innerText = msg;
         toast.style.display = 'block';
-        setTimeout(() => toast.style.display = 'none', 3000);
+        setTimeout(() => toast.style.display = 'none', 3500);
     }
 
-    // 마스킹 함수 (예: 20261234 -> 2026****)
     function maskStudentId(idStr) {
         if (!idStr || idStr.length < 5) return idStr;
         return idStr.substring(0, 4) + "****";
@@ -201,36 +266,24 @@
 
     function renderLeaderboard() {
         let allUsers = [...mockUsers];
-        
-        // 로그인한 유저가 있으면 랭킹 배열에 병합 및 업데이트
         if (user.isLoggedIn) {
             let existing = allUsers.find(u => u.id === user.studentId);
-            if (existing) {
-                existing.points = user.points;
-            } else {
-                allUsers.push({ id: user.studentId, points: user.points });
-            }
+            if (existing) existing.points = user.points;
+            else allUsers.push({ id: user.studentId, points: user.points });
         }
 
-        // 포인트 내림차순 정렬 후 Top 3 추출
         allUsers.sort((a, b) => b.points - a.points);
-        let top3 = allUsers.slice(0, 3);
-
+        const top3 = allUsers.slice(0, 3);
         const listEl = document.getElementById('rankingList');
         listEl.innerHTML = '';
-        
-        top3.forEach((u, idx) => {
-            let li = document.createElement('li');
-            li.className = `rank-item rank-${idx + 1}`;
-            
-            // 로그인한 본인일 경우 강조 표시
-            let isMe = (user.isLoggedIn && u.id === user.studentId) ? ' (나)' : '';
-            let fontWeight = isMe ? 'bold' : 'normal';
-            let textColor = isMe ? 'var(--primary-color)' : '#555';
 
+        top3.forEach((u, idx) => {
+            const li = document.createElement('li');
+            li.className = `rank-item rank-${idx + 1}`;
+            const isMe = (user.isLoggedIn && u.id === user.studentId) ? ' (나)' : '';
             li.innerHTML = `
                 <span class="rank-medal">${idx + 1}위</span>
-                <span class="rank-id" style="font-weight:${fontWeight}; color:${textColor};">${maskStudentId(u.id)}${isMe}</span>
+                <span class="rank-id" style="font-weight:${isMe ? 'bold' : 'normal'}; color:${isMe ? 'var(--primary-color)' : '#555'};">${maskStudentId(u.id)}${isMe}</span>
                 <span class="rank-pts">${u.points}P</span>
             `;
             listEl.appendChild(li);
@@ -241,127 +294,204 @@
         const college = document.getElementById('college').value;
         const sId = document.getElementById('studentId').value;
 
-        if (sId.length < 4) {
-            showToast("올바른 학번을 입력해주세요."); return;
+        if (sId.length !== 8) {
+            showToast("8자리 학번을 입력해주세요.");
+            return;
         }
         if (college !== 'ENG') {
-            showToast("접근 거부: 공과대학 소속만 이용 가능합니다."); return;
+            showToast("접근 거부: 공과대학 소속만 이용 가능합니다.");
+            return;
         }
 
         user.isLoggedIn = true;
         user.studentId = sId;
-        user.points = 0; // 초기 포인트
-        
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('dashboard-screen').style.display = 'block';
         document.getElementById('userName').innerText = sId;
-        
         showToast("인증 성공!");
         renderDashboard();
     }
 
     function renderDashboard() {
         document.getElementById('userPoints').innerText = user.points;
-        renderLeaderboard(); // 화면 갱신 시 랭킹도 갱신
-        
+        renderLeaderboard();
+
+        const rentalDetail = document.getElementById('rentalDetail');
         if (user.hasUmbrella) {
             document.getElementById('rentStatus').innerText = "☔ 우산 대여 중 (1인 1개 제한)";
             document.getElementById('rentStatus').style.color = "var(--accent-red)";
+            rentalDetail.style.display = "block";
+            rentalDetail.innerHTML = `
+                <b>현재 대여 정보</b><br>
+                대여 위치: ${stationNames[user.borrowedStation]} · ${slotLabel(user.borrowedStation, user.borrowedSlot)}<br>
+                반납: <b>1층/2층 어느 스테이션의 빈 홈에도 가능</b>
+            `;
         } else {
             document.getElementById('rentStatus').innerText = "✅ 대여 가능 상태";
             document.getElementById('rentStatus').style.color = "var(--accent-green)";
+            rentalDetail.style.display = "none";
         }
 
         ['A', 'B'].forEach(station => {
-            const data = db[station];
+            const slots = db[station].slots;
             const slotContainer = document.getElementById('slots' + station);
             slotContainer.innerHTML = '';
 
-            let slotsUI = new Array(data.capacity).fill('empty');
-            for(let i = 0; i < data.stock; i++) slotsUI[i] = 'stock';
-            for(let i = 0; i < data.brokenSlots; i++) slotsUI[data.capacity - 1 - i] = 'broken';
-
-            slotsUI.forEach(status => {
+            slots.forEach((occupied, index) => {
                 const slotDiv = document.createElement('div');
                 slotDiv.classList.add('slot');
-                if (status === 'stock') {
+                slotDiv.innerHTML = `<strong>${slotLabel(station, index)}</strong><span>${occupied ? '우산 O' : '빈 홈'}</span>`;
+
+                if (occupied) {
                     slotDiv.classList.add('has-umb');
-                    slotDiv.innerText = "우산 O";
-                } else if (status === 'broken') {
-                    slotDiv.classList.add('broken');
-                    slotDiv.innerText = "격리";
+                } else if (pendingReturnStation === station && user.hasUmbrella) {
+                    slotDiv.classList.add('return-ready');
+                    slotDiv.querySelector('span').innerText = '반납 가능';
+                    slotDiv.title = '시제품 센서 감지 시뮬레이션';
+                    slotDiv.onclick = () => detectReturnSlot(station, index);
                 } else {
                     slotDiv.classList.add('empty');
-                    slotDiv.innerText = "빈 슬롯";
                 }
                 slotContainer.appendChild(slotDiv);
             });
 
+            const stock = getStock(station);
+            const empty = getEmpty(station);
+            document.getElementById('stockText' + station).innerText = `대여 가능 ${stock}개`;
+            document.getElementById('emptyText' + station).innerText = `빈 홈 ${empty}개`;
+
             const badge = document.getElementById('badge' + station);
-            if (data.stock === 0) {
+            if (stock === 0) {
                 badge.className = "status-badge status-empty";
-                badge.innerText = "재고 0개";
+                badge.innerText = "재고 없음";
+            } else if (stock <= REBALANCE_THRESHOLD) {
+                badge.className = "status-badge status-low";
+                badge.innerText = "재고 부족";
             } else {
                 badge.className = "status-badge status-ok";
-                badge.innerText = `대여가능: ${data.stock}개`;
+                badge.innerText = "여유";
             }
 
             const rentBtn = document.getElementById('rentBtn' + station);
             const returnBtn = document.getElementById('returnBtn' + station);
             const brokenBtn = document.getElementById('brokenBtn' + station);
 
-            if (!user.hasUmbrella && data.stock > 0) rentBtn.classList.remove('btn-disabled');
+            if (!user.hasUmbrella && stock > 0) rentBtn.classList.remove('btn-disabled');
             else rentBtn.classList.add('btn-disabled');
 
-            const availableEmptySlots = data.capacity - (data.stock + data.brokenSlots);
-            if (user.hasUmbrella && availableEmptySlots > 0) {
-                returnBtn.classList.remove('btn-disabled');
-                brokenBtn.classList.remove('btn-disabled');
-            } else {
-                returnBtn.classList.add('btn-disabled');
-                brokenBtn.classList.add('btn-disabled');
-            }
+            if (user.hasUmbrella && empty > 0) returnBtn.classList.remove('btn-disabled');
+            else returnBtn.classList.add('btn-disabled');
 
-            const incentiveBadge = document.getElementById('incentive' + station);
-            if (data.stock === 0 && user.hasUmbrella) incentiveBadge.style.display = 'block';
-            else incentiveBadge.style.display = 'none';
+            if (user.hasUmbrella) brokenBtn.classList.remove('btn-disabled');
+            else brokenBtn.classList.add('btn-disabled');
+
+            const incentive = document.getElementById('incentive' + station);
+            incentive.style.display = (user.hasUmbrella && stock <= REBALANCE_THRESHOLD && empty > 0) ? 'block' : 'none';
+
+            document.getElementById('returnGuide' + station).style.display =
+                (pendingReturnStation === station && user.hasUmbrella) ? 'block' : 'none';
         });
     }
 
     function rentUmbrella(station) {
-        if (user.hasUmbrella) { showToast("이미 대여 중인 우산이 있습니다."); return; }
-        if (db[station].stock <= 0) { showToast("우산이 없습니다."); return; }
+        if (user.hasUmbrella) {
+            showToast("이미 대여 중인 우산이 있습니다.");
+            return;
+        }
 
-        db[station].stock -= 1;
+        const slotIndex = db[station].slots.findIndex(Boolean);
+        if (slotIndex === -1) {
+            showToast("대여 가능한 우산이 없습니다.");
+            return;
+        }
+
+        // 실제 시스템에서는 이 시점에 서버가 Arduino UNO R4 WiFi로 해당 홈 잠금 해제 명령을 전송.
+        db[station].slots[slotIndex] = false;
         user.hasUmbrella = true;
-        showToast(`${station} 락 해제! (모바일 조작 끝, 우산을 빼세요)`);
+        user.borrowedStation = station;
+        user.borrowedSlot = slotIndex;
+        user.borrowedAt = new Date().toISOString();
+        pendingReturnStation = null;
+
+        showToast(`${slotLabel(station, slotIndex)} 잠금 해제! 해당 우산을 가져가세요.`);
         renderDashboard();
     }
 
-    function returnUmbrella(station, isBroken) {
-        if (!user.hasUmbrella) return;
-        
-        const availableEmptySlots = db[station].capacity - (db[station].stock + db[station].brokenSlots);
-        if (availableEmptySlots <= 0) {
-            showToast("반납할 빈 슬롯이 없습니다."); return;
+    function startNormalReturn(station) {
+        if (!user.hasUmbrella) {
+            showToast("현재 대여 중인 우산이 없습니다.");
+            return;
+        }
+        if (getEmpty(station) <= 0) {
+            showToast("이 스테이션에는 빈 홈이 없습니다. 다른 스테이션에 반납해주세요.");
+            return;
         }
 
-        let rewardMsg = "";
-        if (db[station].stock === 0) {
-            user.points += 500;
-            rewardMsg = " (+500P 적립!)";
+        pendingReturnStation = station;
+        showToast("빈 홈 아무 곳에나 우산을 꽂아주세요. 센서가 위치를 자동 인식합니다.");
+        renderDashboard();
+    }
+
+    function detectReturnSlot(station, slotIndex) {
+        if (!user.hasUmbrella || pendingReturnStation !== station) return;
+        if (db[station].slots[slotIndex]) {
+            showToast("이미 우산이 있는 홈입니다.");
+            return;
         }
 
-        if (isBroken) {
-            db[station].brokenSlots += 1;
-            showToast(`고장 접수 완료. 우산이 자동 격리되었습니다.${rewardMsg}`);
-        } else {
-            db[station].stock += 1;
-            showToast(`정상 반납 완료.${rewardMsg}`);
-        }
+        // 반납 직전 재고가 부족한 스테이션이면 리밸런싱 보상 지급.
+        const qualifiesForReward = getStock(station) <= REBALANCE_THRESHOLD;
+
+        db[station].slots[slotIndex] = true;
+        const borrowedFrom = user.borrowedStation;
+        const borrowedSlot = user.borrowedSlot;
+
+        if (qualifiesForReward) user.points += 500;
 
         user.hasUmbrella = false;
-        renderDashboard(); // 포인트가 올랐으므로 랭킹 보드도 자동 갱신됨
+        user.borrowedStation = null;
+        user.borrowedSlot = null;
+        user.borrowedAt = null;
+        pendingReturnStation = null;
+
+        const rewardMsg = qualifiesForReward ? " 리밸런싱 보상 +500P!" : "";
+        showToast(`${slotLabel(borrowedFrom, borrowedSlot)}에서 빌린 우산 → ${slotLabel(station, slotIndex)} 반납 완료.${rewardMsg}`);
+        renderDashboard();
+    }
+
+    function openBrokenReturn(station) {
+        if (!user.hasUmbrella) {
+            showToast("현재 대여 중인 우산이 없습니다.");
+            return;
+        }
+        brokenReturnStation = station;
+        document.getElementById('brokenStationText').innerHTML =
+            `${stationNames[station]}에서 파손 신고 후, <b>기기 측면의 파손 우산 전용 보관함</b>에 넣어주세요.`;
+        document.getElementById('brokenModal').style.display = 'flex';
+    }
+
+    function closeBrokenModal() {
+        brokenReturnStation = null;
+        document.getElementById('brokenModal').style.display = 'none';
+    }
+
+    function confirmBrokenReturn() {
+        if (!user.hasUmbrella || !brokenReturnStation) return;
+
+        const reason = document.getElementById('brokenReason').value;
+        const station = brokenReturnStation;
+
+        // 파손 우산은 정상 슬롯 재고에 추가하지 않음.
+        // 실제 운영에서는 이 기록을 서버/DB의 관리자 점검 목록으로 전송.
+        user.hasUmbrella = false;
+        user.borrowedStation = null;
+        user.borrowedSlot = null;
+        user.borrowedAt = null;
+        pendingReturnStation = null;
+
+        closeBrokenModal();
+        showToast(`파손 신고 완료 (${reason}). ${stationNames[station]} 측면 파손 우산함에 넣어주세요.`);
+        renderDashboard();
     }
 </script>
 </body>
